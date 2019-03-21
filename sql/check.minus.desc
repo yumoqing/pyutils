@@ -1,0 +1,13 @@
+{
+	"stable":"hist_portfolioprofitloss",
+	"sfield":"1",
+	"sgroupby":"portfolio_id,instrumentmaster_id,publishdate",
+	"swhere":"",
+	"ttable":"RPT_Hist_PortfolioProfitLoss",
+	"tgroupby":"portfolio_id,instrument_id,publishdate",
+	"tfield":"1",
+	"twhere":""
+}
+
+
+

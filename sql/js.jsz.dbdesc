@@ -1,0 +1,10 @@
+{
+	"name":"金手指",
+	"driver":"pymssql",
+	"kwargs":{
+		"host":"192.168.8.121",
+		"user":"kmrd",
+		"password":"kmrd",
+		"database":"fundacc25"
+	}
+}

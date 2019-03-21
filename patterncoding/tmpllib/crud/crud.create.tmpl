@@ -1,0 +1,68 @@
+import json
+from funcResource import addFuncList,errFunc
+from crudUtils import typeConvert
+from appPublic.dictObject import DictObject
+
+fields = {{json.dumps(fields)}}
+validation = {{json.dumps(validation)}}
+insertSQL="""insert into {{summary[0].name}} (
+{%- for f in fields %}
+{{f.name}}{%- if not loop.last -%},{% endif %}
+{%- endfor %}) values (
+{%- for f in fields %}
+?{%- if not loop.last -%},{% endif %}
+{%- endfor %})"""
+
+def fieldValidation(rec,name,oper,value):
+  fieldnames = [ f['name'] for f in fields ]
+  try:
+    f = eval("%s %s %s" % (name,oper,value),rec)
+  except:
+    return False
+  retrun f
+  
+def getRecord(request,rec,errFunc):
+  rec = {}
+  for f1 in fields:
+    f = DictObject(**f1)
+    d = request.args.get(f.name,None)
+    try:
+      d = typeConvert(f,d)
+    except:
+      return errFunc({'field':f.name,'value':d,'error':'type convert error'})
+    if d is not None:
+      rec.update({f.name:d})
+  return None
+
+def check_inputs(request,rec,errCallback):
+{% for f in fields %}
+  if '{{f.nullable}}' == 'no' and rec.get('{{f.name}}',None) is None:
+    return errCallback({'field':'{{f.name}}','error':'nullable check failed'}
+{% endfor %}
+{% for v in validation %}
+{% if v.oper in ['>','<','>=','<=','in','fk'] %}
+  if not fieldValidation(rec,'{{v.name}}','{{v.oper}}','{{v.value}}')
+    return errCallback(request,{'field':'{{v.name}}','oper':'{{v.oper}}','value':'{{v.value}}','error':'validation failed'}
+{% endif %}
+{% endfor %}  
+  return True
+
+def insertDatabase(request,rec,errHandler):
+  conn = DatabaseEngine.connect(host='localhost',user='yyy',password='pwd111')
+  cur = conn.cursor()
+  comm.begin()
+  cur.execute(insertSQL,({% for f in fields %}rec['{{f.name}}']{%- if not loop.last -%},{% endif %}{% endfor %}))
+  cur.close()
+  conn.commit()
+  return None
+  
+def crudCreate(request,errHandler=errFunc):
+  rec = {}
+  ret = getRecord(request,rec,errHandler)
+  if ret is not None:
+    return ret
+  ret = check_inputs(request,rec,errHandler):
+  if ret is not None:
+    return ret
+  ret = insertDatabase(request,rec,errHandler)
+  return ret  

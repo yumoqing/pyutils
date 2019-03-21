@@ -1,0 +1,123 @@
+{%- macro renderFiltersVariables(filters) -%}
+{%- set fl=[] -%}
+{%- set ac= ArgsConvert('$[',']$') -%}
+{%- for f in filters -%}
+{%- if f.target_type=='variable' -%}
+{%- set vars=ac.findAllVariables(f.target_value) -%}
+{%- for v in vars -%}
+{%- set noise=fl.append({'field_name':f.field_name,'var_name':v}) -%}
+{%- endfor -%}
+{%- endif -%}
+{%- endfor -%}
+[
+{%- for i in fl %}
+{"field_name":"{{i['field_name']}}","var_name":"{{i['var_name']}}"}{%- if not loop.last -%},{%- endif -%}
+{%- endfor %}
+]
+{%- endmacro -%}
+
+{
+	"actionlist":[],
+	"tmplname":"gridview.tmpl",
+	"data":{
+		"id":"id_{{summary[0].name.lower()}}",
+		"editable":true,
+		"saveUrl":"addData.dspy",
+		"updateUrl":"updateData.dspy",
+		"deleteUrl":"deleteData.dspy",
+		"code_ios":[
+{% for i in validation if i.oper in ['fk','code'] %}
+{%- set vlist = i.value.split(':') -%}
+			{
+				"field":"{{i.name}}",
+				"tablename":"{{vlist[0]}}",
+				"valuefield":"{{vlist[1]}}",
+				"textfield":"{{vlist[2]}}",
+				"argstext":"{{vlist[3]}}"
+			}{%- if not loop.last -%},{%- endif -%}
+{% endfor %}
+		],
+{% if global().get('filters',False) %}
+		"filters":{{renderFiltersVariables(filters)}},
+{% else %}
+		"filters":[
+{%- for f in fields %}
+{"field_name":"{{f.name}}","var_name":"{{f.name}}"}{%- if not loop.last -%},{%- endif -%}
+{%- endfor %}
+		],
+{% endif %}
+		"toolbar":[
+			{
+				"mode":"function",
+				"icon":"icon-add",
+				"title":"add",
+				"handler":"function(){$('#id_{{summary[0].name.lower()}}').datagrid('insertRow',{'index':0,row:{}});$('#id_{{summary[0].name}}').datagrid('beginEdit',0);}"
+			},
+			{
+				"mode":"function",
+				"icon":"icon-remove",
+				"title":"delete",
+				"handler":"function(){ /*$('#id_{{summary[0].name.lower()}}').datagrid('addRow')*/}"
+			},
+
+			{
+				"mode":"newpage",
+				"icon":"icon-edit_add",
+				"handler":"edit.html"
+			},
+			{
+				"mode":"popup",
+				"icon":"icon-edit",
+				"handler":"http://www.baidu.com"
+			},
+			{
+				"mode":"function",
+				"icon":"icon-edit",
+				"title":"edit",
+				"handler":"function(){alert('haha');}"
+			}
+		],
+		"options":{
+			"fitColumns":false,
+			"rownumbers" : true,
+			"striped" : true,
+			"nowrap" : true,
+			"url":"getDataList.dspy",
+			"title":"{{summary[0].title}}",
+			"singleSelect":true,
+	    "striped":true,
+	    "method":"get",
+	    "idField":"{{summary[0].primary[0]}}",
+	    "pagination":true,
+	    "sortName":"{{summary[0].primary[0]}}",
+	    "sortOrder":"DESC",
+{% for i in validation if i.oper == 'grid' %}
+			"{{i.name}}":{%- if i.value[0] in ['{','[','"' ] -%}{{i.value}}{%- else -%}"{{i.value}}"{%- endif -%},
+{% endfor %}
+	    "columns": [[
+{%- for f in fields -%}
+				{
+					"field":"{{f.name.lower()}}",
+{% if f.type == "str" %}
+					"editor":{"type":"text","options":{}},
+{% else %}
+					"editor":{"type":"text","options":{}},
+					"align":"right",
+{% endif %}
+					"title":"{{f.title}}",
+					"sortable":true,
+					"width":100,
+{% for i in validation if i.oper == 'field' %}
+{% if i.name.split(':',1)[0] == f.name %}
+					"{{i.name.split(':',1)[1]}}":{%- if i.value[0] in ['{','[','"' ] -%}{{i.value}}{%- else -%}"{{i.value}}"{%- endif -%},
+{% endif %}
+{% endfor %}
+					"noice":true
+					
+				}{%- if not loop.last -%},{% endif %}
+{%- endfor %}
+			]]
+		}
+	}
+}
+

@@ -1,0 +1,9 @@
+{
+	"driver":"cx_Oracle",
+	"name":"金手指4.5",
+	"kwargs":{
+		"user":"monitor",
+		"password":"monitor",
+		"dsn":"10.0.193.171:1521/orcl"
+	}
+}

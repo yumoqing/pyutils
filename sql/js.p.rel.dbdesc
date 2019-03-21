@@ -1,0 +1,8 @@
+{
+	"driver":"cx_Oracle",
+	"kwargs":{
+		"user":"rel",
+		"password":"Password123edm",
+		"dsn":"10.0.129.18:1521/kedm"
+	}
+} 

@@ -1,0 +1,24 @@
+--表空间  
+CREATE TABLESPACE {{tablespace}}  
+DATAFILE '{{dbpath}}\{{tablespace}}\{{tablespace}}.dbf' size 1800M  
+         EXTENT MANAGEMENT LOCAL SEGMENT SPACE MANAGEMENT AUTO;   
+--索引表空间  
+CREATE TABLESPACE {{tablespace}}_Index  
+DATAFILE '{{dbpath}}\{{tablespace}}\{{tablespace}}_idx.dbf' size 1012M           
+         EXTENT MANAGEMENT LOCAL SEGMENT SPACE MANAGEMENT AUTO;       
+  
+--2.建用户  
+create user {{user}} identified by {{password}}   
+default tablespace {{tablespace}} ;  
+   
+--3.赋权  
+grant connect,resource to {{user}};  
+grant create any sequence to {{user}};  
+grant create any table to {{user}};  
+grant delete any table to {{user}};  
+grant insert any table to {{user}};  
+grant select any table to {{user}};  
+grant unlimited tablespace to {{user}};  
+grant execute any procedure to {{user}};  
+grant update any table to {{user}};  
+grant create any view to {{user}};  

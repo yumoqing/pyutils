@@ -1,0 +1,9 @@
+{
+	"driver":"mysql.connector",
+	"kwargs":{
+		"user":"ymq",
+		"password":"ymq123",
+		"host":"192.168.1.104",
+		"database":"ymqdb"
+	}
+}

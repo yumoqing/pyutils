@@ -1,0 +1,4 @@
+select * from RPT_BONDRATINGS
+where 1=1
+$<rtype>$and ratingtype=${rtype}$ $</rtype>$
+$<bond>$and bond_id = ${bond}$ $</bond>$

@@ -1,0 +1,8 @@
+{
+	"driver":"cx_Oracle",
+	"kwargs":{
+		"user":"monitor_rta",
+		"password":"monitor_123",
+		"dsn":"10.0.193.6:1521/jsdc"
+	}
+}

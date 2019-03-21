@@ -1,0 +1,65 @@
+# -*- coding:utf8 -*-
+{% macro renderFiltersVariables(filters) %}
+{% set fl=[] %}
+{% set ac= ArgsConvert('$[','}$') %}
+{% for f in filters %}
+{% if f.oper.lower() in ['(',')','and','or'] %}
+{% set noise=fl.append(f.oper.lower()) %}
+{% else %}
+{% set noise=fl.append(f.field_name + ' ' + f.oper + ' ' + f.target_value) %}
+{% endif %}
+{% endfor %}
+{% for i in fl %}
+u"{{i}}"{%- if not loop.last -%},{%- endif -%}
+{% endfor %}
+{% endmacro %}
+
+request.args = uObject(request.args)
+ns = {}
+ns.update(request.args)
+for k,v in ns.items():
+	if type(v) == type([]) and len(v) == 1:
+		ns[k] = v[0]
+
+sql_string = u"""select {% for f in fields -%}{%- if f.type != 'str' -%}convert(varchar(30),{{f.name.lower()}}) {{f.name.lower()}}{%- else -%}{{f.name.lower()}}{%- endif -%}{%- if not loop.last %},{%- endif -%}{% endfor %}
+from {{summary[0].name.lower()}}"""
+
+dadesc = {
+	"actionlist":[],
+	"data":{
+		"sqldesc":{
+			"writer":{
+				"filetype":"records",
+				"kwargs":{
+				}
+			},
+			"sql_string":sql_string,
+			"paging":{
+				"rowsname":"rows",
+				"pagename":"page",
+				"sortname":"sort",
+				"ordername":"order"
+			},
+			"filters":[
+{% if global().get('filters',False) %}
+				{{renderFiltersVariables(filters)}}
+{% else %}
+{%- for f in fields %}
+u"{{f.name}} = N'$[{{f.name}}]$'"{%- if not loop.last -%}, u"and",{%- endif -%}
+{%- endfor %}
+{% endif %}
+			],
+			"db":"{{dbname}}",
+			"default":{"rows":10,"page":1,"sort":"{{fields[0].name}}","order":"DESC"}
+		}
+	}
+}
+
+data = sqlds(dadesc,ns,rowcount=True)
+total_data = {'total': data['data'][0]['rcnt']}
+print total_data
+data = sqlds(dadesc,ns)
+data2 = data['data']
+total_data.update({'rows':data2})
+data['data'] = total_data
+return data

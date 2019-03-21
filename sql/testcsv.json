@@ -1,0 +1,21 @@
+{
+	"sql_string":"select * from dbo.deposit_rate${__mainsql__}",
+	"db":{
+		"driver":"pymssql",
+		"kwargs":{
+			"host":"192.168.161.1",
+			"user":"ymq",
+			"password":"ymq123",
+			"database":"stockconsult"
+		}
+	},
+	"writer":{
+		"filetype":"csv",
+		"kwargs":{
+			"outfile":"./deposit_rate_data.csv",
+			"write_mode":"w",
+			"coding":"utf8",
+			"delimiter":"|+|"
+		}
+	}
+}

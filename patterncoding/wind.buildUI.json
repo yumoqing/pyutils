@@ -1,0 +1,22 @@
+{
+	"coding":"utf-8",
+	"sourcePath":"D:/mydocs/python/codes/pywork/Utils/sql/jsdbs/wind",
+	"targetPath":"d:/mydocs/python/presentation/wind",
+	"tmplPaths":[
+		"D:/mydocs/python/codes/pywork/Utils/patterncoding/tmpllib/crud",
+		"D:/mydocs/python/codes/pywork/Utils/patterncoding/tmpllib/database/sqlserver"
+	],
+	"global":{
+		"dbname":"wind"
+	},
+	"outputMapping" : {
+		"crud.datagrid.tmpl":"${targetPath}/${basename}/${basename}.gridview",
+		"crud.sql.adddata.tmpl":"${targetPath}/${basename}/addData.dspy",
+		"crud.sql.deletedata.tmpl":"${targetPath}/${basename}/deleteData.dspy",
+		"crud.sql.page.tmpl":"${targetPath}/${basename}/getDataList.dspy",
+		"crud.sql.updatedata.tmpl":"${targetPath}/${basename}/updateData.dspy",
+		"crud.sql.updatedata.tmpl":"${targetPath}/${basename}/updateData.dspy",
+		"ddl.tmpl":"${targetPath}/ddl.sql/${basename}.ddl.sql",
+		"crud.data.insert.tmpl":"${targetPath}/ddl.sql/${basename}.insert.sql"
+	}
+}

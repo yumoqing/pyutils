@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: licenseManager
+Version: 0.0.1
+Summary: licenseManager
+Home-page: UNKNOWN
+Author: yumoqing
+Author-email: yumoqing@icloud.com
+License: UNKNOWN
+Description-Content-Type: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Framework :: licenseManager

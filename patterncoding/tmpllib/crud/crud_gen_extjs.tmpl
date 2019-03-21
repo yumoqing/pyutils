@@ -1,0 +1,13 @@
+{% for cds in cruddefs %}
+{% set datafile = cds.datafile %}
+{% set key = cds.key if 'key' in cds.keys() else basenameWithoutExt(datafile) %}
+{% for g in tmpls %}
+mkdir {{ospath(basedir + '/' + g.savepath)}}
+mkdir {{ospath(basedir + '/' + g.savepath + '/' + key)}}
+{% endfor %}
+
+{% for g in tmpls %}
+{% set outfile=renders("{{basedir}}/{{savepath}}/{{key}}/{{basenameWithoutExt(datafile)}}{{basenameWithoutExt(tmpl)}}",{'key':key,'basedir':basedir,'savepath':g.savepath,'tmpl':g.tmpl,'datafile':datafile}) %}
+c:\utils\pcoding\xlsxData.exe {{datafile}} | C:\utils\pcoding\jsonCoding.exe C:\utils\pcoding\tmpllib\extjs\{{g.tmpl}} > {{outfile}}
+{% endfor %}
+{% endfor %}

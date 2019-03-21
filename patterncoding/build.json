@@ -1,0 +1,21 @@
+{
+	"coding":"utf-8",
+	"sourcePath":"D:/mydocs/work/Kmerit/售前工作/恒丰POC/datamodel",
+	"targetPath":"testdir",
+	"type":"class",
+	"tmplPaths":[
+		"D:/mydocs/python/codes/pywork/Utils/patterncoding/tmpllib/crud",
+		"D:/mydocs/python/codes/pywork/Utils/patterncoding/tmpllib/database/oracle"
+	],
+	"outputMapping" : {
+		"crud.datagrid.tmpl":"${targetPath}/${basename}/${basename}.gridview",
+		"crud.sql.adddata.tmpl":"${targetPath}/${basename}/addData.dspy",
+		"crud.sql.deletedata.tmpl":"${targetPath}/${basename}/deleteData.dspy",
+		"crud.sql.page.tmpl":"${targetPath}/${basename}/getDataList.dspy",
+		"crud.sql.updatedata.tmpl":"${targetPath}/${basename}/updateData.dspy",
+		"crud.sql.updatedata.tmpl":"${targetPath}/${basename}/updateData.dspy",
+		"data.paging.sqldbs.tmpl":"${targetPath}/${basename}/data.paging.sql",
+		"ddl.tmpl":"${targetPath}/ddl.sql/${basename}.ddl.sql",
+		"crud.data.insert.tmpl":"${targetPath}/ddl.sql/${basename}.insert.sql"
+	}
+}

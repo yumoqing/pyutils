@@ -1,0 +1,7 @@
+{
+	"driver":"sqlite3",
+	"coding":"utf-8",
+	"kwargs":{
+		"database":"d:/mydocs/python/codes/3rdeye/db/kdb.sqlite3"
+	}
+}

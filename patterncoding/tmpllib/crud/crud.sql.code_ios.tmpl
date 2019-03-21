@@ -1,0 +1,30 @@
+#
+request.args = uObject(request.args)
+ns = {}
+ns.update(request.args)
+for k,v in ns.items():
+	if type(v) == type([]) and len(v) == 1:
+		ns[k] = v[0]
+
+ac = ArgsConvert('$[',']$')
+
+sqlstr="select distinct $[valuefield]$,$[textfield]$ from $[tablename]$"
+sqlstring = ac.convert(sqlstr,ns)
+dadesc = {
+	"actionlist":[],
+	"data":{
+		"sqldesc":{
+			"writer":{
+				"filetype":"records",
+				"kwargs":{
+				}
+			},
+			"sql_string":sqlstring,
+			"db":"{{dbname}}",
+			"default":{}
+		}
+	}
+}
+
+data = sqlds(dadesc,{})
+return data

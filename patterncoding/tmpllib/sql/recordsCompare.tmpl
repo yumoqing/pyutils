@@ -1,0 +1,50 @@
+--数据表对比模板
+-- 
+-- 数据格式如下
+--{
+--	"source":{
+--		"table":"Hist_PortfolioProfitLoss",
+--		"fields":[
+--			"portfolio_id",
+--			"publishdate"
+--		]
+--	},
+--	"target":{
+--		"table":"RPT_Hist_PortfolioProfitLoss",
+--		"fields":[
+--			"portfolio_id",
+--			"publishdate"
+--		]
+--	},
+--  "order by":"publishdate desc"
+--}
+
+{% macro sourceFieldsList(s) %}
+{% for f in s.fields %}
+{{f}}{%if not loop.last %},{% endif %}
+{% endfor %}
+{% endmacro %}
+{% macro targetFieldList(t,s) %}
+{% for i in range(len(s.fields)) %}
+{{t.fields[i]}} as {{s.fields[i]}}{%if not loop.last %},{% endif %}
+{% endfor %}
+{% endmacro %}
+
+select {{sourceFieldsList(source)}}{% if not isNone(source.fields) %},{% endif %} max(scnt),max(dcnt) from
+(
+select {{sourceFieldsList(source)}}{% if not isNone(source.fields) %},{% endif %} count(1) as scnt, 0 as dcnt from {{source.table}}
+{% if not isNone(source.fields) %}
+group by {{','.join(source.fields)}}
+{% endif %}
+union
+select {{targetFieldList(target,source)}}{% if not isNone(source.fields) %},{% endif %} 0 as scnt, count(1) as dcnt from {{target.table}}
+{% if not isNone(target.fields) %}
+group by {{','.join(target.fields)}}
+{% endif %}
+)
+{% if not isNone(source.fields) %}
+group by {{sourceFieldsList(source)}}
+{% endif %}
+{% if orderby %}
+order by {{orderby}}
+{% endif %}

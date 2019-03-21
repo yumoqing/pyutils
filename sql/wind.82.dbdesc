@@ -1,0 +1,9 @@
+{
+	"driver":"cx_Oracle",
+	"name":"wind",
+	"kwargs":{
+		"user":"wind",
+		"password":"wind",
+		"dsn":"172.16.10.82:1521/orcl"
+	}
+}

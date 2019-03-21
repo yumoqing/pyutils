@@ -1,0 +1,50 @@
+{
+	"dbdesc":{
+		"driver":"pymssql",
+		"kwargs":{
+			"user":"ymq",
+			"database":"stockconsult",
+			"password":"ymq123",
+			"host":"localhost"
+		}
+	},
+	"sqldesc":{
+		"writer":{
+			"filetype":"records",
+			"kwargs":{
+			}
+		},
+		"paging":{
+			"rowsname":"rows",
+			"pagename":"page",
+			"sortname":"sort",
+			"ordername":"order"
+		},
+		"filters":[
+			"stock_num='$[stock_num]$'",
+			"and",
+			"(",
+			"p_open < $[min_p_open]$",
+			"or",
+			"p_open > $[max_p_open]$",
+			")",
+			"and",
+			"p_close > $[p_close]$"
+		],
+		"sql_string":"select * from $[tablename]$",
+		"default":
+		{
+			"stock_num":"600804",
+			"tradedates":[20130815],
+			"pagesize":20,
+			"tablename":"dbo.stock_daily_hist",
+			"page":1,
+			"rows":10,
+			"sort":"trade_date",
+			"order":"desc",
+			"min_p_open":10,
+			"max_p_open":20,
+			"p_close":12
+		}
+	}
+}

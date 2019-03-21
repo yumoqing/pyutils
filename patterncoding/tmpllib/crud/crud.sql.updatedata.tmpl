@@ -1,0 +1,110 @@
+# -*- coding:utf8 -*-
+request.args = uObject(request.args)
+print request.args
+retdata = {
+	"actionlist":[],
+}
+{% macro renderNullCheck(f) %}
+	errdata={
+		"status":"error",
+		"errormsg":"{{f}} is Null,but required"
+	}
+	retdata['data'] = errdata
+	return retdata
+{% endmacro %}
+kkv = {}
+{% for f in fields if f.name in summary[0].primary %}
+v = request.args.get(u'{{f.name.lower()}}',None)
+if v is not None:
+{% if f.type == 'str' %}
+	if v[0] == u'': 
+		v1 = None 
+	else:
+		v1 = v[0]
+	kkv.update({u'{{f.name.lower()}}':v1})
+{% elif f.type in ['long','short','llong'] %}
+	if v[0] == u'': 
+		v1 = None 
+	else:
+		v1 = int(v[0])
+	kkv.update({u'{{f.name.lower()}}':v1})
+{% elif f.type in ['float','double','ddouble','decimal'] %}
+	if v[0] == u'': 
+		v1 = None 
+	else:
+		v1 = float(v[0])
+	kkv.update({u'{{f.name.lower()}}':v1})
+{% else %}
+	if v[0] == u'': 
+		v1 = None 
+	else:
+		v1 = v[0]	
+	kkv.update({u'{{f.name.lower()}}':v1})
+{% endif %}
+else:
+{{renderNullCheck(f.name)}}
+	pass
+{% endfor %}
+vkv = {}
+{% for f in fields if f.name not in summary[0].primary %}
+v = request.args.get(u'{{f.name.lower()}}',None)
+if v is not None:
+{% if f.type == 'str' %}
+	if v[0] == u'': 
+		v1 = None 
+	else:
+		v1 = v[0]	
+	vkv.update({u'{{f.name.lower()}}':v1})
+{% elif f.type in ['long','short','llong'] %}
+	if v[0] == u'': 
+		v1 = None 
+	else:
+		v1 = int(v[0])
+	vkv.update({u'{{f.name.lower()}}':v1})
+{% elif f.type in ['float','double','ddouble','decimal'] %}
+	if v[0] == u'': 
+		v1 = None 
+	else:
+		v1 = float(v[0])
+	vkv.update({u'{{f.name.lower()}}':v1})
+{% else %}
+	if v[0] == u'': 
+		v1 = None 
+	else:
+		v1 = v[0]
+	vkv.update({u'{{f.name.lower()}}':v1})
+{% endif %}
+
+{% endfor %}
+
+sets = [k + u'=${' + k + u'}$' for k,v in vkv.items() ]
+conds = [k + u'=${' + k + u'}$' for k,v in kkv.items() ]
+print "sets=",sets, "conds=",conds
+sql_string = u"update {{summary[0].name.lower()}} set %s where %s" % ( u','.join(sets),u' and '.join(conds))
+print sql_string
+
+dadesc = {
+	"actionlist":[],
+	"data":{
+		"sqldesc":{
+			"writer":{
+				"filetype":"records",
+				"kwargs":{
+				}
+			},
+			"sql_string":sql_string,
+			"db":"{{dbname}}",
+			"default":{"rows":10,"page":1,"sort":"{{summary[0].primary[0]}}","order":"DESC"}
+		}
+	}
+}
+
+NS={}
+NS.update(kkv)
+NS.update(vkv)
+data = sqlds(dadesc,NS)
+
+retdata['data'] = data
+print "data"
+return retdata
+

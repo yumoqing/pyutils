@@ -1,0 +1,9 @@
+{
+	"driver":"pymssql",
+	"kwargs":{
+		"host":"localhost",
+		"user":"ymq",
+		"password":"ymq123",
+		"database":"dzh"
+	}
+}

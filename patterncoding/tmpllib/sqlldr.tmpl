@@ -1,0 +1,10 @@
+load data
+infile "{{sqlldr[0].datapath}}/{{sqlldr[0].datafile}}"
+into table {{sqlldr[0].table.summary[0].name}} {{sqlldr[0].method}}
+badfile "{{sqlldr[0].errpath}}/{{sqlldr[0].badfile}}"
+fields terminated by "{{sqlldr[0].delimiter}}"
+(
+{%- for f in sqlldr[0].table.fields -%}
+{{f.name}} {%- if f.type == 'date' -%}date "{{sqlldr[0].dateformat}}"{% endif %}{%- if not loop.last -%},{% endif %}
+{% endfor %}
+)

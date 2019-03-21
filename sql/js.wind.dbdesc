@@ -1,0 +1,9 @@
+{
+	"driver":"cx_Oracle",
+	"name":"wind",
+	"kwargs":{
+		"user":"wind",
+		"password":"aaa111",
+		"dsn":"10.0.185.137:1521/WINDDB"
+	}
+}

@@ -1,0 +1,91 @@
+{%- macro gbsfiels(gbs,linkString) %}
+{% if isNone(gbs) or gbs!="" %}
+{%- for f in gbs.split(',') %}{{f}}{% if not loop.last %}||'{{linkString}}'||{% endif %}{% endfor %} as gbfield
+{% endif %}
+{% endmacro -%}
+
+{%- macro gbsgroupby(gbs) %}
+{% if isNone(gbs) or gbs !="" %}group by {{gbs}}{% endif %}
+{% endmacro -%}
+
+{%- macro sqlsum(tname,fname,gbs,where,linkString) %}
+select {{gbsfiels(gbs,linkString)}} 
+,sum({{fname}}) svalue
+from {{"''".join(tname.split("'"))}}
+{%- if isNone(where) or where!="" %} where {{where}}{% endif -%}
+{{gbsgroupby(gbs)}}
+{% endmacro -%}
+{% macro tablechecklog(
+stable,
+ttable,
+sfield,
+tfield,
+sgroupby,
+tgroupby,
+swhere,
+twhere,
+sflink,
+tflink,
+check_name
+) %}
+insert into table_compare_checklog
+select 
+ '{{stable}}' as stable
+,'{{ttable}}' as ttable
+,'{{sfield}}' as s_field
+,'{{tfield}}' as t_field
+,'{{sgroupby}}' as sbg_field
+,'{{tgroupby}}' as tbg_field
+,a.svalue as s_value
+,b.svalue as t_value
+,a.gbfield as sgb_value
+,b.gbfield as tgb_value
+,to_char(sysdate,'yyyy-mm-dd') as compare_date
+,to_char(sysdate,'HH24:MI:SS') as compare_time
+,'{{check_name}}' as check_name
+from 
+(
+{{sqlsum(stable,sfield,sgroupby,swhere,sflink)}}
+) a
+	full join 
+(
+{{sqlsum(ttable,tfield,tgroupby,twhere,sflink)}}
+) b
+	on a.gbfield = b.gbfield
+where a.gbfield is null or
+		b.gbfield is null or
+		a.svalue <> b.svalue
+;
+{% endmacro %}
+{% if global().get('stable',False) %}
+{{tablechecklog(
+stable,
+ttable,
+sfield,
+tfield,
+sgroupby,
+tgroupby,
+swhere,
+twhere,
+sflink,
+tflink,
+check_name
+)}}
+{% elif global().get('checklist',False) %}
+{% for c in checklist %}
+{{tablechecklog(
+c.stable,
+c.ttable,
+c.sfield,
+c.tfield,
+c.sgroupby,
+c.tgroupby,
+c.swhere,
+c.twhere,
+c.sflink,
+c.tflink,
+c.check_name
+)}}
+{% endfor %}
+{% endif %}
+

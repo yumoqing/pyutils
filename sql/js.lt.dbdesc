@@ -1,0 +1,10 @@
+{
+	"name":"汤森路透",
+	"driver":"pymssql",
+	"kwargs":{
+		"host":"10.0.185.168",
+		"user":"js_dev",
+		"password":"AAaa1234*",
+		"database":"qai"
+	}
+}

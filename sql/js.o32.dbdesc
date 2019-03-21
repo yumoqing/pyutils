@@ -1,0 +1,9 @@
+{
+	"driver":"cx_Oracle",
+	"name":"嘉实恒生o3.2",
+	"kwargs":{
+		"user":"iauser",
+		"password":"123456",
+		"dsn":"10.0.194.40:1521/trade"
+	}
+}

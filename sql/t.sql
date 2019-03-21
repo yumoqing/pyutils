@@ -1,0 +1,1 @@
+select * from songs where lang=N'英文'

@@ -1,0 +1,20 @@
+{
+	"sql_string":"select * from tb_object_1018${__mainsql__}",
+	"db":{
+		"driver":"cx_Oracle",
+		"kwargs":{
+			"user":"wind",
+			"password":"aaa111",
+			"dsn":"wind"
+		}
+	},
+	"writer":{
+		"filetype":"csv",
+		"kwargs":{
+			"outfile":"./windCompanyInfo.csv",
+			"write_mode":"w",
+			"coding":"utf8",
+			"delimiter":","
+		}
+	}
+}

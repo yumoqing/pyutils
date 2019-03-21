@@ -1,0 +1,37 @@
+{
+	"dbdesc":{
+		"driver":"cx_Oracle",
+		"kwargs":{
+			"user":"rel",
+			"password":"edm",
+			"dsn":"10.0.193.176:1521/kedm"
+		}
+	},
+	"sqldesc":{
+		"writer":{
+			"filetype":"records",
+			"kwargs":{
+			}
+		},
+		"sql_string":"select * from dimensioninclude where dv_value=${dv_value}$ and dv_cvalue=${dv_cvalue}$",
+		"paging":{
+			"rowsname":"rows",
+			"pagename":"page",
+			"sortname":"field1",
+			"ordername":"desc"
+		},
+		"filters":[
+			{
+				"oper":"("
+			},
+			{
+				"oper":null,
+				"filtertext":"a = '555'",
+			},
+			{
+				"oper":")"
+			}
+		],
+		"default":{"dv_value":"99","dv_cvalue":"02"}
+	}
+}

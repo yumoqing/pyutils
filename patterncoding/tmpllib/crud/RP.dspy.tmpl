@@ -1,0 +1,14 @@
+
+rows=int(request.args.get('rows',['15'])[0])
+page=int(request.args.get('page',['1'])[0])
+
+ns = {
+	'page':page,
+	'rows':rows
+}
+
+dbname,tablename = '{{dbname}}','{{tablename}}'
+crud = CRUD(dbname)
+ret = crud.RP(tablename,NS=ns)
+
+return ret

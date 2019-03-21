@@ -1,0 +1,13 @@
+{
+	"coding":"utf-8",
+	"sourcePath":"D:/mydocs/work/Kmerit/售前工作/恒丰POC/datamodel",
+	"targetPath":"d:/temp/tmplout",
+	"global":{
+	},
+	"tmplPaths":[
+		"d:/temp/tmpls"
+	],
+	"outputMapping" : {
+		"test.tmpl":"${targetPath}/${basename}/${basename}.test.txt"
+	}
+}

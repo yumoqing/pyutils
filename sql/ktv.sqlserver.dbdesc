@@ -1,0 +1,10 @@
+{
+	"driver":"pymssql",
+	"coding":"utf-8",
+	"kwargs":{
+		"user":"ymq",
+		"database":"ambi",
+		"password":"ymq123",
+		"host":"localhost"
+	}
+}

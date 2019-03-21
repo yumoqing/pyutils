@@ -1,0 +1,136 @@
+# -*- coding:utf8 -*-
+{% macro renderExprValue(v,type) %}
+{%- if type in ['long','short','llong'] -%} int('{{v}}')
+{%- elif type == 'date' -%}str2date('{{v}}')
+{%- elif type == 'time' -%}str2datetime('{{v}}')
+{%- elif type in ['float','double','ddouble','decimal'] -%}float('{{v}}')
+{%- else %}u'{{v}}'
+{%- endif %}
+{% endmacro %}
+{% macro renderExprCheck(f) %}
+{%- set checks = [] -%}
+{% for v in validation if v.type in ['>','<','>=','<=','in','oper' ] and v.name == f.name %}
+{%- set opss = checks.append(v) -%}
+{%- endfor -%}
+{%- if len(checks)>0 -%}
+{% for v in checks %}
+{% if v.type in ['>','<','>=','<='] %}
+kv[u'{{f.name.lower()}}'] {{v.type}} {{renderExprValue(v.value,f.type)}}
+{% elif v.type == 'oper' %} {{v.value}}
+{%- else -%}
+True
+{%- endif -%}
+{% endfor %}
+{%- else -%}
+True
+{%- endif -%}
+{% endmacro %}
+request.args = uObject(request.args)
+print request.args
+
+retdata = {
+	"actionlist":[],
+}
+{% macro renderNullCheck(f) %}
+	errdata={
+		"status":"error",
+		"errormsg":"{{f}} is Null,but required"
+	}
+	retdata['data'] = errdata
+	return retdata
+{% endmacro %}
+
+kv = {}
+{% for f in fields %}
+v = request.args.get(u'{{f.name.lower()}}',None)
+if v is not None:
+{% if f.type == 'str' %}
+	if v[0] == '': 
+		v1 = None 
+	else:
+		v1 = v[0]
+	kv.update({u'{{f.name.lower()}}':v1})
+{% elif f.type in ['long','short','llong'] %}
+	if v[0] == '': 
+		v1 = None 
+	else:
+		v1 = int(v[0])
+	kv.update({u'{{f.name.lower()}}':v1})
+{% elif f.type in ['float','double','ddouble','decimal'] %}
+	if v[0] == '': 
+		v1 = None 
+	else:
+		v1 = float(v[0])
+	kv.update({'{{f.name.lower()}}':v1})
+{% elif f.type == 'date' %}
+	if v[0] == '': 
+		v1 = None 
+	else:
+		v1 = str2date(v[0])
+	kv.update({u'{{f.name.lower()}}':v1})
+{% elif f.type == 'time' %}
+	if v[0] == '': 
+		v1 = None 
+	else:
+		v1 = str2datetime(v[0])
+	kv.update({u'{{f.name.lower()}}':v1})
+{% elif f.type == 'timestamp' %}
+	if v[0] == '': 
+		v1 = None 
+	else:
+		v1 = str2datetime(v[0])
+	kv.update({u'{{f.name.lower()}}':v1})
+{% else %}
+	if v[0] == '': 
+		v1 = None 
+	else:
+		v1 = v[0]
+	kv.update({u'{{f.name.lower()}}':v1})
+{% endif %}
+{% endfor %}
+
+print "kv=",kv
+fields = [
+{%- for i in fields -%}u'{{i.name}}',{%- endfor -%}
+]
+ph = [u'${' + k + u'}$' for k in kv.keys() if kv[k] is not None ]
+fs = [ k for k in kv.keys() if kv[k] is not None ]
+print "ph,fs=",ph,fs
+# run the data validation defined in xlsx
+# not nullable check
+{% for f in fields if f.nullable == 'no' %}
+if u'{{f.name.lower()}}' not in kv.keys() or not kv.get(u'{{f.name.lower()}}',False):
+	raise ServerException(61001,'field (%s) requested, buy missed' % u'{{f.name.lower()}}' )
+{% endfor %}
+# foreign key check
+{% for v in validation if v['type'] == 'fk' %}
+{% endfor %}
+# expr check
+{% for f in fields %}
+if not {{renderExprCheck(f)}}:
+	raise ServerException(61002,'{"field":u"{{f.name.lower()}}","msg":"failed to pass validation"')
+{% endfor %}
+print "ph,fs=",ph,fs
+sql_string = u"insert into {{summary[0].name}} (%s) values (%s)" % ( u','.join(fs),u','.join(ph))
+print sql_string
+dadesc = {
+	"actionlist":[],
+	"data":{
+		"sqldesc":{
+			"writer":{
+				"filetype":"records",
+				"kwargs":{
+				}
+			},
+			"sql_string":sql_string,
+			"db":"{{dbname}}",
+			"default":{"rows":10,"page":1,"sort":"{{summary[0].primary[0]}}","order":"DESC"}
+		}
+	}
+}
+
+data = sqlds(dadesc,kv)
+
+retdata['data'] = data
+return retdata
+

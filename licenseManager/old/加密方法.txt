@@ -1,0 +1,12 @@
+加密方法：
+
+用genRSAKey.py生成公钥（pub.key.dmp）和私钥文件（pri.key.dmp）（一个软件只做一次）
+
+私钥用来对mac字符串做签字，签字后的字符串，保存为license.txt文件，发给用户，放在程序目录中。
+公钥文件（pub.key.dmp）内容复制到程序中
+编译程序文件，发布共享版本
+获得用户注册信息后，编辑user_info.py文件
+用maillicense.py生成注册信息文件（license.txt)
+将license.txt文件发送给用户
+用户将license.txt文件替换软件目录下的license.txt文件，完成软件注册
+

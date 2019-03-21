@@ -1,0 +1,9 @@
+{
+	"driver":"cx_Oracle",
+	"name":"恒生TA",
+	"kwargs":{
+		"user":"monitor",
+		"password":"monitor_123",
+		"dsn":"10.0.193.5:1521/tadb"
+	}
+}

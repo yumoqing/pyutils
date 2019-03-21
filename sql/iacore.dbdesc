@@ -1,0 +1,8 @@
+{
+	"driver":"cx_Oracle",
+	"kwargs":{
+		"user":"kedm",
+		"password":"kedm",
+		"dsn":"10.0.129.35:1521/iacore"
+	}
+} 

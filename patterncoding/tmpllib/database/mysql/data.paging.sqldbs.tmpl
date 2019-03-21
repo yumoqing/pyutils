@@ -1,0 +1,89 @@
+﻿{# 定义宏 #}
+{%- macro renderConstExpr(filter) -%}
+{%- if filter.oper.lower()=='in' -%}
+{%- if recordFind(fields,{'name':filter.field_name})[0].type=='str' -%}
+({%- for v in filter.expr_obj.split(',') -%}
+N'{{v}}'{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}
+)
+{%- elif recordFind(fields,{'name':filter.field_name})[0].type in ['short','long','llong'] -%}
+({%- for v in filter.expr_obj.split(',') -%}
+{{int(v)}}{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}
+)
+{%- elif recordFind(fields,{'name':filter.field_name})[0].type in ['float','double','ddouble','decimal'] -%}
+(
+{%- for v in filter.expr_obj.split(',') -%}
+{{float(v)}}{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}
+)
+{%- else -%}
+(
+{%- for v in filter.expr_obj.split(',') -%}
+'{{v}}'{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}
+)
+{%- endif -%}
+{%- elif filter.oper.lower()=='between' -%}
+{%- if recordFind(fields,{'name':filter.field_name})[0].type=='str' -%}
+N'{{filter.expr_obj.split(',')[0]}}' and N'{{filter.expr_obj.split(',')[1]}}'
+{%- elif recordFind(fields,{'name':filter.field_name})[0].type in ['short','long','llong'] -%}
+{{int(filter.expr_obj.split(',')[0])}} and {{int(filter.expr_obj.split(',')[1])}}
+{%- elif recordFind(fields,{'name':filter.field_name})[0].type in ['float','double','ddouble','decimal'] -%}
+{{float(filter.expr_obj.split(',')[0])}} and {{float(filter.expr_obj.split(',')[1])}}
+{%- else -%}
+'{{filter.expr_obj.split(',')[0]}}' and '{{filter.expr_obj.split(',')[1]}}'
+{%- endif -%}
+{%- else -%}
+{%- if recordFind(fields,{'name':filter.field_name})[0].type=='str' -%}
+N'{{filter.expr_obj}}'
+{%- elif recordFind(fields,{'name':filter.field_name})[0].type in ['short','long','llong'] -%}
+{{int(filter.expr_obj)}}
+{%- elif recordFind(fields,{'name':filter.field_name})[0].type in ['float','double','ddouble','decimal'] -%}
+{{float(filter.expr_obj)}}
+{%- else -%}
+'{{filter.expr_obj}}'
+{%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+{# 宏renderConstExpr 结束 #}
+
+{# 定义宏renderFilters #}
+{%- macro renderFilters() -%}
+	{%- if len(filters) > 0 -%}
+		{%- for f in filters -%}
+			{%- if f.oper.lower() in ['(',')','and','or','not' ] -%}
+{{' ' + f.oper.lower() + ' '}}
+			{%- elif f.oper.lower() == 'between' -%}
+				{%- if f.ptype == 'variable' -%}
+{{f.field_name}} between {{'${' + f.expr_obj.split(',')[0] + '}'}} } and  {{'${' + f.expr_obj.split(',')[1] + '}'}}
+				{%- else -%}
+{{f.field_name}} between {{renderConstExpr(f.expr_obj.split(',')[0])}} and {{renderConstExpr(f.expr_obj.split(',')[1])}}'
+				{%- endif -%}
+			{%- else -%}
+				{%- if f.ptype=='variable' -%}
+					{%- if parameters.get(expr_obj,False) -%}
+1=1
+					{%- else -%}
+{{f.field_name}} {{f.oper}} {{'${' + expr_obj + '}'}}}
+					{%- endif -%}
+				{%- elif f.ptype=='constant' -%}
+{{f.field_name}} {{f.oper}} {{renderConstExpr(f)}}
+				{%- endif -%}
+			{%- endif -%}
+		{%- endfor -%}
+	{%- else -%}
+	{# else for if len(filters) > 0 #}
+1=1
+	{%- endif -%}
+{%- endmacro -%}
+{#宏renderFilters定义结束 #}
+
+SELECT *
+  FROM (SELECT tt.*, ROWNUM AS rowno
+          FROM (  SELECT {%- for f in fields -%}f.name{%- if not loop.last -%},{%- endif -%}{%- endfor -%}
+                    FROM {{summary[0].name}} t
+                   WHERE {{renderFilters()}}
+{#                ORDER BY {{sort}} {{order}}) tt #}
+{#         WHERE ROWNUM <= {{int(page)*int(rows)}}) table_alias #}
+{#  WHERE table_alias.rowno >= {{(int(page) - 1) * int(rows) + 1}}; #}

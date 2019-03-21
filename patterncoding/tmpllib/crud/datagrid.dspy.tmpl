@@ -1,0 +1,75 @@
+
+target = request.args.get('__target__',["$('body')"])[0]
+dbname,tablename = '{{dbname}}','{{tablename}}'
+crud = CRUD(dbname)
+fields = crud.I(tablename)
+fs = [ crud.defaultIOField(f) for f in fields ]
+id = crud.dbname+':'+tablename
+name = dbname + '_' + tablename
+
+b = absurl(request,'./RP.dspy')
+
+data = {
+	"tmplname":"widget_js.tmpl",
+	"data":{
+		"__ctmpl__":"datagrid",
+		"__target__":target,
+		"data":{
+			"widget_name":name,
+			"icon-conv":"icon-table",
+			"title":tablename,
+			"url":absurl(request,'./RP.dspy'),
+			"deleteURL":absurl(request,'./D.dspy'),
+			"appendURL":absurl(request,'./C.dspy'),
+			"updateURL":absurl(request,'./U.dspy'),
+			"idField":fields[0].name,
+			"dnd":True,
+			"view":"scrollview",
+			"fields":fs,
+			"toolbar":{
+				"tools":[
+					{
+						"name":"addpopup",
+						"icon":"icon-add",
+						"label":"add"
+					},
+					{
+						"name":"delete",
+						"icon":"icon-remove",
+						"label":"delete"
+					},
+					{
+						"name":"editpopup",
+						"icon":"icon-edit",
+						"label":"update"
+					},
+					{
+						"name":"filter",
+						"icon":"icon-search",
+						"label":"filter"
+					},
+					{
+						"name":"save",
+						"icon":"icon-save",
+						"label":"save",
+						"hidden":True
+					},
+					{
+						"name":"undo",
+						"icon":"icon-undo",
+						"label":"cancel",
+						"hidden":True
+					}
+				]
+			},
+			"options":{
+				"pageSize":60,
+				"pagination":False
+			}
+		}
+	}
+}
+
+data = crud.oa.execute(name,'datagrid',data)
+
+return data

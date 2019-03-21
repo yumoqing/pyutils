@@ -1,0 +1,22 @@
+{% for r in data %}
+insert into {{summary[0].name}} (
+{%- for f in fields if f.name in r.keys() and r[f.name] != "" and not isNone(r[f.name]) -%}
+{{f.name}}{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}
+) values (
+{%- for f in fields if f.name in r.keys() and r[f.name] != "" and not isNone(r[f.name]) -%}
+{%- if f.type == 'str' -%}
+{%- if hasattr(r[f.name],'decode') -%}
+N'{{r[f.name].decode('utf-8')}}'
+{%- else -%}
+N'{{r[f.name]}}'
+{%- endif -%}
+{%- elif f.type in ['short','long','llong','float','double','ddouble','decimal'] -%}{{r[f.name]}}
+{%- elif f.type == 'date' -%}to_date('{{r[f.name]}}','YYYY-MM-DD')
+{%- elif f.type == 'datetime' -%} to_date('{{r[f.name]}}','YYYY-MM-DD hh:mm:ss')
+{%- else -%}'{{r[f.name]}}'
+{%- endif -%}
+{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}
+);
+{%- endfor -%}

@@ -1,0 +1,8 @@
+setup.py
+licenseManager/__init__.py
+licenseManager/lc.py
+licenseManager.egg-info/PKG-INFO
+licenseManager.egg-info/SOURCES.txt
+licenseManager.egg-info/dependency_links.txt
+licenseManager.egg-info/not-zip-safe
+licenseManager.egg-info/top_level.txt

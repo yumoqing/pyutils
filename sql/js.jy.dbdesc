@@ -1,0 +1,10 @@
+{
+	"name":"聚源数据库",
+	"driver":"pymssql",
+	"kwargs":{
+		"host":"10.0.185.138",
+		"user":"js_dev",
+		"password":"js_dev",
+		"database":"jydb"
+	}
+}
