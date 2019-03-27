@@ -12,13 +12,13 @@ class MarkDownProcessor(BaseProcessor):
 
 	def fileHandle(self,f,request):
 		b = f.read()
+		b = self.urlreplace(b,request)
 		ret = {
 				"__widget__":"markdown",
 				"data":{
 					"md_text":b
 				}
 		}
-		ret = self.urlreplace(ret,request)
 		self.file_data = ret
 		return self.file_data
 	
