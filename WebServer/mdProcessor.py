@@ -27,17 +27,18 @@ class MarkDownProcessor(BaseProcessor):
 			p1 = '\[.*?\]\((.*?)\)'
 			url = re.findall(p1,s)[0]
 			txts = s.split(url)
-			url = absUrl(url,request)
+			url = absUrl(request,url)
 			return url.join(txts)
 
 		p = '\[.*?\]\(.*?\)'
 		textarray = re.split(p,mdtxt)
 		links = re.findall(p,mdtxt)
 		newlinks = [ replaceURL(link) for link in links]
-		mdtxt = ''
-		for i in range(len(newlink)):
-			mdtxt = mdtxt + textarray[i]
-			mdtxt = mdtxt + newlinks[i]
-		mdtxt = mdtxt + textarray[i+1]
+		if len(links)>0:
+			mdtxt = ''
+			for i in range(len(newlinks)):
+				mdtxt = mdtxt + textarray[i]
+				mdtxt = mdtxt + newlinks[i]
+			mdtxt = mdtxt + textarray[i+1]
 		return mdtxt
 		
