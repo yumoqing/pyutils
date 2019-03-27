@@ -17,6 +17,26 @@ class MarkDownProcessor(BaseProcessor):
 					"md_text":b
 				}
 		}
+		ret = self.urlreplace(ret,request)
 		self.file_data = ret
 		return self.file_data
 	
+	def urlreplace(self,mdtxt,request):
+		def replaceURL(s):
+			p1 = '\[.*?\]\((.*?)\)'
+			url = re.findall(p1,s)[0]
+			txts = s.split(url)
+			url = absUrl(url,request)
+			return url.join(txts)
+
+		p = '\[.*?\]\(.*?\)'
+		textarray = re.split(p,mdtxt)
+		links = re.findall(p,mdtxt)
+		newlinks = [ replaceURL(link) for link in links]
+		mdtxt = ''
+		for i in range(len(newlink)):
+			mdtxt = mdtxt + textarray[i]
+			mdtxt = mdtxt + newlinks[i]
+		mdtxt = mdtxt + textarray[i+1]
+		return mdtxt
+		

@@ -246,6 +246,13 @@ def obj2JsonString(obj,coding='utf-8'):
 		return str(obj)
 
 def absUrl(request,url):
+	http='http://'
+	https='https://'
+	if url[:7] == http:
+		return url
+	if url[:8] == https:
+		return url
+
 	paths = request.path.split('/')[:-1]
 	if url[0] == '/':
 		return url
