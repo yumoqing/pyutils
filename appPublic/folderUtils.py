@@ -11,6 +11,13 @@ import win32api
 """
 import sys
 
+
+def startsWith(text,s):
+	return text[:len(s)] == s
+
+def endsWith(text,s):
+	return text[-len(s):] == s
+
 def ProgramPath():
 	filename = sys.argv[0]
 	if getattr(sys,'frozen',False):
