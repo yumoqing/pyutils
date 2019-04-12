@@ -22,8 +22,9 @@ def recordFind(lst,dic):
 
 
 class MyTemplateEngine:
-	def __init__(self,pathList,file_coding='utf-8',out_coding='utf-8'):
+	def __init__(self,pathList,file_coding='utf-8',out_coding='utf-8',getGlobal=GlobalEnv):
 		self.file_coding = file_coding
+		self.getGlobal = getGlobal
 		self.out_coding = out_coding
 		loader = FileSystemLoader(pathList, encoding=self.file_coding)
 		self.env = Environment(loader=loader)	
@@ -31,7 +32,7 @@ class MyTemplateEngine:
 
 	def set(self,n,v):
 		# self.env.globals.update({n:v})
-		tenv = GlobalEnv()
+		tenv = self.getGlobal()
 		tenv[n] = v
 		#print('MyTemplateEngine.py,set(),tenv=',tenv)
 	
@@ -54,7 +55,7 @@ class MyTemplateEngine:
 		self.set('basenameWithoutExt',lambda x:os.path.splitext(os.path.basename(x))[0])
 		self.set('extname',lambda x:os.path.splitext(x)[-1])
 	def _setEnv(self):
-		tenv = GlobalEnv()
+		tenv = self.getGlobal()
 		self.env.globals.update(tenv)
 		
 	def _render(self,template,data):

@@ -100,7 +100,7 @@ class MiniI18N:
 		[ self.clientLangs.pop(k,None) for k in self.clientLangs.keys() if self.clientLangs[k]['timestamp'] < tim ]
 				
 	def getLangDict(self,lang):
-		return self.langTextDict[lang]
+		return self.langTextDict.get('lang',{})
 		
 	def getLangText(self,msg,lang=None) :
 		"""
