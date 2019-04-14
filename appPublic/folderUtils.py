@@ -58,15 +58,19 @@ def folderList(path) :
 			yield full_name
 
 def listFile(folder,suffixs=[],rescursive=False):
+    subffixs = [ i.lower() for i in suffixs ]
     for f in os.listdir(folder):
         p = os.path.join(folder,f)
         if rescursive and os.path.isdir(p):
             for p1 in listFile(p,suffixs=suffixs,rescursive=True):
 	            yield p1
         if os.path.isfile(p):
-            ext = p.split('.')[-1].lower()
-            if suffixs == [] or ext in suffixs:
+            e = p.lower()
+            if suffixs == [] :
                 yield p
+            for s in subffixs:
+		if e.endswith(s):
+                    yield p
 
 def folderInfo(root,uri=''):
 	relpath = uri
