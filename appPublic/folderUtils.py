@@ -69,7 +69,7 @@ def listFile(folder,suffixs=[],rescursive=False):
             if suffixs == [] :
                 yield p
             for s in subffixs:
-		if e.endswith(s):
+                if e.endswith(s):
                     yield p
 
 def folderInfo(root,uri=''):
