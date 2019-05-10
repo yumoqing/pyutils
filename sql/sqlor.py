@@ -73,11 +73,6 @@ def readsql(fn):
 	f.close()
 	return b
 
-def opendb(dbdef):
-	driver = __import__(dbdef['driver'])
-	conn = driver.connect(**dbdef['kwargs'])
-	return conn
-
 class SQLResult(object):
 	def __init__(self,cur,klass=DictObject):
 		self.cur = cur

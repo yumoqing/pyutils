@@ -16,14 +16,6 @@ from sql import mysqlor
 
 from appPublic.myjson import loadf
 
-def opendb(dbdef):
-	driver = __import__(dbdef['driver'])
-	if dbdef['driver'] == 'cx_Oracle' and dbdef['kwargs'].get('user') == 'sys':
-		conn = driver.connect(dbdef['kwargs'].get('user'),dbdef['kwargs'].get('password'),dbdef['kwargs'].get('dsn'),cx_Oracle.SYSDBA)
-	else:
-		conn = driver.connect(**dbdef['kwargs'])
-	return conn
-	
 def sqlorFactory(dbdesc,conn=None):
 	driver = dbdesc.get('driver',dbdesc)
 	def findSubclass(name,klass):
@@ -276,7 +268,6 @@ def runSQL(func):
 		ret = None
 		try:
 			sqldesc =  func(dbname,NS,*args,**kwargs)
-			w = sqldesc.get('writer',None)
 			ret = sor.sqlExecute(sqldesc,NS)
 		except Exception as e:
 			print('Exception:',e,dbname,NS)
