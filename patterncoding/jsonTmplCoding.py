@@ -37,6 +37,6 @@ if __name__ == '__main__':
 		mypath.append(os.path.dirname(t))
 		tmplname = os.path.basename(t)
 		e = MyTemplateEngine(mypath)
-		s = e.render(tmplname,ns)
-		print( s)
+		s = e.render(tmplname,ns).decode('utf-8')
+		print(s)
 	sys.exit(0)

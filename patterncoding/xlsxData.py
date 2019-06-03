@@ -92,16 +92,16 @@ class CRUDException(Exception):
 class XLSXData(object):
 	def __init__(self,xlsxfile):
 		atype = type(xlsxfile) 
-	if atype == type('') or atype == type(u''):
-		self.xlsxfile = xlsxfile
-		self.book = xlrd.open_workbook(xlsxfile)
-	else:
-		self.book = xlsxfile # is from Factory
+		if atype == type('') or atype == type(u''):
+			self.xlsxfile = xlsxfile
+			self.book = xlrd.open_workbook(xlsxfile)
+		else:
+			self.book = xlsxfile # is from Factory
 	  
 	def readRecords(self,sheet):
 		i = 1
 		recs = []
-		name = sheet.name.encode('utf-8')
+		name = sheet.name
 		fields = self.getFieldNames(sheet)
 		tc = TypeConvert()
 		while (i < sheet.nrows):
@@ -109,10 +109,6 @@ class XLSXData(object):
 			rec = {}
 			while (j < sheet.ncols):
 				a = sheet.cell(i,j).value
-				"""
-				if type(a) == type(u''):
-					a = a.encode('utf-8')
-				"""
 				k = fields[j][0]
 				v = tc.conv(fields[j][1],a)
 				rec[k] = v
@@ -138,10 +134,6 @@ class XLSXData(object):
 			else:
 				if type(f) != type(u""):
 					f = 'F_' + str(f)
-				"""
-				else:
-					f = f.encode('utf-8')
-				"""
 			b=f.split(':')
 			if len(b) < 2:
 				b.append(None)
@@ -153,7 +145,7 @@ class CRUDData(XLSXData):
 	@classmethod
 	def isMe(self,book):
 		sheets = book.sheets()
-		names = [ s.name.encode('utf-8') for s in sheets ]
+		names = [ s.name for s in sheets ]
 		if 'summary' not in names:
 			return False
 		if 'fields' not in names:
