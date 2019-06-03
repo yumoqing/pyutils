@@ -1,6 +1,7 @@
 
 import asyncio
-from asyncio.coroutines import iscoroutine
+from collections.abc import Coroutine
+# from asyncio.coroutines import iscoroutine
 
 import zmq
 import zmq.asyncio
@@ -66,9 +67,9 @@ class RRServer:
 	a request / response mode server
 	"""
 	def __init__(self,port,handler=None):
-		self.name = name
 		self.port = port
 		self.handler = handler
+		print(type(self.handler))
 		
 	async def run(self):
 		running = True
@@ -79,10 +80,9 @@ class RRServer:
 			rmsg = await socket.recv()
 			wmsg = rmsg
 			if self.handler is not None:
-				if iscoroutine(self.handler):
-					wmsg = await self.handler(rmsg)
-				else:
-					wmsg = self.handler(rmsg)
+				wmsg = self.handler(rmsg)
+				if isinstance(wmsg,Coroutine):
+					wmsg = await wmsg
 			await socket.send(wmsg)
 		socket.close()
 
@@ -133,10 +133,9 @@ class PPPuller:
 		while self.running:
 			msg = await self.socket.recv()
 			if self.handler is not None:
-				if iscoroutine(self.handler):
-					await self.handler(msg)
-				else:
-					self.handler(msg)
+				x = self.handler(msg)
+				if isinstance(x,Coroutine):
+					await x
 
 class PairClient:
 	"""
@@ -171,8 +170,7 @@ class PairServer:
 			msg = await socket.recv()
 			ret = msg
 			if self.handler is not None:
-				if iscoroutine(self.handler):
-					ret = await self.handler()
-				else:
-					ret = self.handler()
+				ret = self.handler()
+				if isinstance(ret,Coroutine):
+					ret = await ret
 			await socket.send(ret)
