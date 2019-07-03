@@ -7,6 +7,7 @@ def asyncCall(func):
 	def wraped_func(*args,**kw):
 		task =  asyncio.ensure_future(func(*args,**kw))
 		asyncio.gather(task)
+	return wraped_func
 
 class Worker:
 	def __init__(self,max=50):
