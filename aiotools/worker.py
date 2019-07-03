@@ -1,5 +1,12 @@
 
 import asyncio
+from functools import wraps
+
+def asyncCall(func):
+	@wraps
+	def wraped_func(*args,**kw):
+		task =  asyncio.ensure_future(func(*args,**kw))
+		asyncio.gather(task)
 
 class Worker:
 	def __init__(self,max=50):
