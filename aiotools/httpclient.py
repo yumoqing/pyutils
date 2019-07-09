@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+import re
 
 RESPONSE_BIN = 0
 RESPONSE_TEXT = 1
@@ -9,13 +10,11 @@ RESPONSE_FILE = 3
 class HttpClient:
 	def __init__(self,coding='utf-8'):
 		self.coding = coding
-		self.sessions = {}
+		self.session = None
 		self.cookies = {}
 
 	async def close(self):
-		for k,v in self.sessions.items():
-			await v.close()
-		self.sessions = {}
+		await self.session.close()
 
 	def url2domain(self,url):
 		parts = url.split('/')[:3]
@@ -28,30 +27,31 @@ class HttpClient:
 
 	def getCookies(self,url):
 		name = url2domain(url)
-		return self.cookies.get(name)
+		return self.cookies.get(name,None)
 
 	def getsession(self,url):
-		if url.startswith('http'):
-			pre = self.url2domain(url)
-			s = self.sessions.get(pre)
-			if s is None:
-				jar = aiohttp.CookieJar(unsafe=True)
-				self.sessions[pre] = aiohttp.ClientSession(cookie_jar=jar)
-				s = self.sessions.get(pre)
-			self.lastSession = s
-			return s
-		return self.lastSession
+		if self.session is None:
+			jar = aiohttp.CookieJar(unsafe=True)
+			self.session = aiohttp.ClientSession(cookie_jar=jar)
+		return self.session
 				
 	async def handleResp(self,url,resp,resp_type):
 		if resp.cookies is not None:
 			self.setCookie(url,resp.cookies)
 
-		if resp_type == RESPONSE_TEXT:
-			return await resp.text(self.coding)
 		if resp_type == RESPONSE_BIN:
 			return await resp.read()
 		if resp_type == RESPONSE_JSON:
 			return await resp.json()
+		# default resp_type == RESPONSE_TEXT:
+		return await resp.text(self.coding)
+
+	def grapCookie(self,url):
+		session = self.getsession(url)
+		domain = self.url2domain(url)
+		filtered = session.cookie_jar.filter_cookies(domain)
+		return filtered
+		print(f'=====domain={domain},cookies={fltered},type={type(fltered)}===')
 
 	async def get(self,url,
 					params={},headers={},resp_type=RESPONSE_TEXT):
@@ -62,11 +62,14 @@ class HttpClient:
 		return None
 
 	async def post(self,url,
-					data=b'',headers={},resp_type=RESPONSE_TEXT):
+					data=b'',headers={},cookies=None,
+					resp_type=RESPONSE_TEXT):
 		session = self.getsession(url)
-		resp = await session.post(url,data=data,headers=headers)
+		resp = await session.post(url,data=data,
+						headers=headers,cookies=cookies)
 		if resp.status==200:
-			return await self.handleResp(resp,resp_type)
+			return await self.handleResp(url,resp,resp_type)
+		print(f'**ERROR**{url} response code={resp.status}')
 		return None
 
 if __name__ == '__main__':

@@ -14,9 +14,7 @@ class DictObject(dict):
 	def __getattr__(self,name):
 		if name in self:
 			return self[name]
-		for k in self.keys():
-			print(k,self[k])
-		raise AttributeError(name)
+		return None
 	
 	def __setattr__(self,name,v):
 		self[name] = v

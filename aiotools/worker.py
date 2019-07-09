@@ -3,7 +3,7 @@ import asyncio
 from functools import wraps
 
 def asyncCall(func):
-	@wraps
+	@wraps(func)
 	def wraped_func(*args,**kw):
 		task =  asyncio.ensure_future(func(*args,**kw))
 		asyncio.gather(task)
